@@ -1,6 +1,7 @@
 import sys
 from sqlalchemy import create_engine, exc, Column, Integer, String, Sequence
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
+
 from sqlalchemy.orm import sessionmaker
 import os
 
@@ -10,7 +11,7 @@ from decouple import config
 Base = declarative_base()
 
 class MQTTMessage(Base):
-    __tablename__ = 'mqtt_messages'  # should match the actual table name
+    __tablename__ = 'mqtt_message'  # should match the actual table name
     id = Column(Integer, Sequence('mqtt_msg_id_seq'), primary_key=True)
     topic = Column(String(50))
     payload = Column(String(500))
@@ -23,7 +24,6 @@ DATABASE_NAME = config('MQTT_PUB_SUB_DB_NAME')  # replace with your database nam
 PORT = config('MQTT_PUB_SUB_DB_PORT')
 
 DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@localhost:{PORT}/{DATABASE_NAME}"
-print(DATABASE_URL)
 engine = create_engine(DATABASE_URL)
 
 try:
@@ -35,6 +35,20 @@ except exc.SQLAlchemyError as e:
     sys.exit(1)  # Exit the script with an error code
     
 Session = sessionmaker(bind=engine)
+
+# Writing Data to Database
+session = Session()
+message = MQTTMessage(topic="example/topic", payload="This is a message.")
+
+try:
+    session.add(message)
+    session.commit()
+    print("Data added successfully!")
+except Exception as e:
+    session.rollback()
+    print(f"An error occurred: {e}")
+finally:
+    session.close()
 
 
 
