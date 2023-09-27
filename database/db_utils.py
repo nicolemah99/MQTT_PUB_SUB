@@ -1,23 +1,14 @@
 import sys
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import sessionmaker
-from decouple import config
+from config.settings import DATABASE_URL
 from database.models import MQTTMessage
-
-# Read the configuration from environment variables securely
-USERNAME = config('MQTT_PUB_SUB_DB_USERNAME')
-PASSWORD = config('MQTT_PUB_SUB_DB_PASSWORD')
-DATABASE_NAME = config('MQTT_PUB_SUB_DB_NAME')
-PORT = config('MQTT_PUB_SUB_DB_PORT')
-
-# Construct the database connection URL
-DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@localhost:{PORT}/{DATABASE_NAME}"
 
 # Create a new instance of the Engine object to manage database connections
 engine = create_engine(DATABASE_URL)
+
 # Configure a Session class which will serve as a factory for creating Session objects
 Session = sessionmaker(bind=engine)
-
 
 def connect_to_database():
     """
@@ -52,7 +43,7 @@ def add_message(topic, payload):
         # Add the new message to the session and commit it to the database
         session.add(message)
         session.commit()
-        print("Data added successfully!")
+        print(f"{payload} successfully added to {topic}")
     except Exception as e:
         # Rollback the transaction in case of an error during the commit
         session.rollback()
