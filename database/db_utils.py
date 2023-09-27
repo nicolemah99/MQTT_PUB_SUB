@@ -1,10 +1,8 @@
-import random
 import sys
-from sqlalchemy import create_engine, exc, Column, Integer, String, Sequence
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import create_engine, exc
+from sqlalchemy.orm import sessionmaker
 from decouple import config
-from paho.mqtt import client as mqtt_client
-
+from database.models import MQTTMessage
 
 # Read the configuration from environment variables securely
 USERNAME = config('MQTT_PUB_SUB_DB_USERNAME')
@@ -14,21 +12,6 @@ PORT = config('MQTT_PUB_SUB_DB_PORT')
 
 # Construct the database connection URL
 DATABASE_URL = f"postgresql://{USERNAME}:{PASSWORD}@localhost:{PORT}/{DATABASE_NAME}"
-
-# Define a declarative base class from which all mapped classes should inherit
-Base = declarative_base()
-
-class MQTTMessage(Base):
-    """
-    Define a class mapped to the mqtt_message table in the database.
-    This class will be the representation of the table in the Python code.
-    """
-    __tablename__ = 'mqtt_message'  # Define the actual table name in the database
-    # Define the columns in the table, including their types and constraints
-    id = Column(Integer, Sequence('mqtt_msg_id_seq'), primary_key=True)
-    topic = Column(String(50))
-    payload = Column(String(500))
-
 
 # Create a new instance of the Engine object to manage database connections
 engine = create_engine(DATABASE_URL)
@@ -77,25 +60,3 @@ def add_message(topic, payload):
     finally:
         # Close the session to release the connection back to the connection pool
         session.close()
-
-
-def main():
-    # Connect to the database
-    if connect_to_database():
-        print("Connected to database")
-        #client = mqtt.Client()
-        #client.on_connect = on_connect
-        #client.on_message = on_message
-    
-        # Connect to the MQTT broker
-        # You will need to change the hostname to the IP address or hostname of your MQTT broker
-        #client.connect("mqtt.eclipse.org", 1883, 60)  
-    
-        # Blocking call that processes network traffic, dispatches callbacks, and handles reconnecting.
-        #client.loop_forever()
-    else:
-        sys.exit(1)
-    
-
-if __name__ == "__main__":
-    main()
