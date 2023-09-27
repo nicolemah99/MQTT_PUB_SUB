@@ -23,7 +23,7 @@ def subscribe(client: mqtt_client):
         client.subscribe(topic)
 
 
-def run():
+def mqtt_start():
     client = connect_mqtt()
     subscribe(client)
     client.loop_forever()

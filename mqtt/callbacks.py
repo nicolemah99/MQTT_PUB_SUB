@@ -1,4 +1,4 @@
-from paho.mqtt import client as mqtt_client
+from database.db_utils import add_message_to_db
 
 # Callback function: triggered when broker responds to connection request
 def on_connect(client, userdata, flags, rc):
@@ -9,7 +9,10 @@ def on_connect(client, userdata, flags, rc):
 
 # Callback function: triggered once client receives a message from the MQTT Broker
 def on_message(client, userdata, msg):
-    print(f"Received `{msg.payload.decode()}` from `{msg.topic}` topic")
+    payload = msg.payload.decode()
+    topic = msg.topic
+    print(f"Received `{payload}` from `{topic}` topic")
+    add_message_to_db(topic, payload)
 
 
 # Callback function: triggered once client receives a message from the MQTT Broker

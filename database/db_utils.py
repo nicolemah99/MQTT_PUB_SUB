@@ -26,7 +26,7 @@ def connect_to_database():
         return False
 
 
-def add_message(topic, payload):
+def add_message_to_db(topic, payload):
     """
     Inserts a new message into the mqtt_message table in the database.
     
