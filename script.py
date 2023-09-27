@@ -1,7 +1,10 @@
+import random
 import sys
 from sqlalchemy import create_engine, exc, Column, Integer, String, Sequence
 from sqlalchemy.orm import declarative_base, sessionmaker
 from decouple import config
+from paho.mqtt import client as mqtt_client
+
 
 # Read the configuration from environment variables securely
 USERNAME = config('MQTT_PUB_SUB_DB_USERNAME')
@@ -76,10 +79,23 @@ def add_message(topic, payload):
         session.close()
 
 
-if __name__ == "__main__":
-    # Check if the connection to the database is successful before adding a message
+def main():
+    # Connect to the database
     if connect_to_database():
-        add_message("example/topic", "This is a message.")
+        print("Connected to database")
+        #client = mqtt.Client()
+        #client.on_connect = on_connect
+        #client.on_message = on_message
+    
+        # Connect to the MQTT broker
+        # You will need to change the hostname to the IP address or hostname of your MQTT broker
+        #client.connect("mqtt.eclipse.org", 1883, 60)  
+    
+        # Blocking call that processes network traffic, dispatches callbacks, and handles reconnecting.
+        #client.loop_forever()
     else:
-        # Exit the program with an error code if the connection is unsuccessful
         sys.exit(1)
+    
+
+if __name__ == "__main__":
+    main()
