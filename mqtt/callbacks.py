@@ -5,7 +5,7 @@ def on_connect(client, userdata, flags, rc):
     if rc == 0:
         print("Successfully connected to MQTT Broker.\n")
     else:
-        print("Failed to connect to MQTT Broker, return code %d\n", rc)
+        print(f"Failed to connect to MQTT Broker, return code {rc}\n")
 
 # Callback function: triggered once client receives a message from the MQTT Broker
 def on_message(client, userdata, msg):
@@ -21,3 +21,6 @@ def on_subscribe(client, userdata, mid, granted_qos):
         print(f"Successfully subscribed to topic! QoS: {granted_qos[0]}")
     else:
         print("Failed to subscribe!")
+
+def on_disconnect(client, userdata, rc):
+    print(f"Disconnected with result code: {rc}")
